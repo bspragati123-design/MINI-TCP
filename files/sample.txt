@@ -1,0 +1,5 @@
+Mini-TCP File Transfer Test
+
+This file is being transferred over UDP using a custom reliable protocol.
+
+The protocol supports sequence numbers, acknowledgements, simulated packet loss, retransmissions, and Go-Back-N sliding windows.
