@@ -1,150 +1,225 @@
-# Mini-TCP: Reliable File Transfer Protocol over UDP
+# Mini-TCP: Reliable File Transfer over UDP
 
-## 1. Project Overview
+A Python-based implementation of reliable file transfer over UDP using Go-Back-N sliding window protocol, acknowledgements, retransmissions, packet-loss simulation, and SHA-256 integrity verification.
 
-Mini-TCP is an educational implementation of a reliable file transfer protocol built using Python and UDP sockets.
+## 1. Overview
 
-UDP provides fast communication but does not guarantee packet delivery, ordering, or retransmission. Mini-TCP addresses these limitations by implementing reliability mechanisms inspired by TCP.
+UDP provides fast, connectionless communication but does not guarantee packet delivery, ordering, or retransmission.
 
-The project demonstrates how reliable communication can be achieved over an unreliable network.
+Mini-TCP demonstrates how reliability mechanisms can be implemented on top of UDP. It uses concepts inspired by TCP to transfer files reliably, even when packet loss is simulated.
 
-## 2. Problem Statement
+This is an educational Computer Networks project developed using Python.
 
-UDP is a connectionless transport protocol that does not guarantee reliable data delivery. Packets may be lost, duplicated, or received out of order.
+## 2. Objectives
 
-The objective of Mini-TCP is to design and implement a reliable file transfer mechanism over UDP using packet sequencing, acknowledgements, retransmissions, timeout handling, and data integrity verification.
-
-## 3. Objectives
-
-- Implement reliable communication using UDP sockets.
-- Design a custom packet format.
-- Implement Go-Back-N sliding window protocol.
-- Detect packet corruption using checksums.
+- Understand UDP socket programming.
+- Implement a custom packet-based communication protocol.
+- Apply the Go-Back-N sliding window mechanism.
 - Handle packet loss using acknowledgements and retransmissions.
-- Support file transfer of different sizes.
-- Verify transferred files using SHA-256.
-- Analyze performance under different network conditions.
+- Verify file integrity using SHA-256 hashing.
+- Measure file-transfer performance under different network conditions.
 
-## 4. Technologies Used
+## 3. Technologies Used
 
-- Programming Language: Python
-- Networking: UDP sockets
-- Protocol Design: Custom JSON-based packets
-- Reliability: Go-Back-N ARQ
-- Integrity Verification: SHA-256
-- Development Environment: Visual Studio Code
-- Operating System: Windows
+| Technology | Purpose |
+|---|---|
+| Python 3 | Core programming language |
+| UDP Sockets | Network communication |
+| JSON | Packet structure and serialization |
+| Go-Back-N | Reliable data transmission |
+| SHA-256 | File integrity verification |
+| Base64 | Binary payload encoding |
+| Git and GitHub | Version control |
 
-## 5. Key Features
+## 4. Key Features
 
-- Custom packet creation and validation.
-- Sequence numbers and cumulative acknowledgements.
-- Go-Back-N sliding window mechanism.
-- Timeout-based retransmission.
-- Simulated packet loss and network delay.
-- File metadata exchange.
-- File chunking and reconstruction.
-- SHA-256 file integrity verification.
-- Performance measurement and reporting.
-- Empty, small, and large file support.
+- **Custom packet protocol:** Uses packet types, sequence numbers, transfer IDs, payload lengths, and checksums.
+- **Reliable transmission:** Uses Go-Back-N sliding window protocol.
+- **Acknowledgements:** Uses cumulative acknowledgements to track received packets.
+- **Retransmission:** Resends unacknowledged packets after timeout.
+- **Network simulation:** Simulates packet loss and transmission delays.
+- **File transfer:** Supports empty, small, and large files.
+- **Integrity verification:** Uses SHA-256 to compare original and received files.
+- **Performance monitoring:** Records transfer time, packets, retransmissions, simulated drops, timeouts, and throughput.
 
-## 6. Project Structure
+## 5. Project Structure
 
 ```text
 MINI-TCP/
 │
-├── files/
-├── received/
-│
-├── protocol.py
-├── sender.py
-├── receiver.py
-├── network_file_sender.py
-├── network_file_receiver.py
-├── file_sender.py
+├── create_test_file.py
+├── file_integrity.py
+├── file_metadata.py
 ├── file_receiver.py
+├── file_sender.py
 ├── file_transfer_receiver.py
 ├── file_utils.py
-├── file_metadata.py
-├── file_integrity.py
-├── simulator.py
 ├── metrics.py
-├── create_test_file.py
+├── network_file_receiver.py
+├── network_file_sender.py
+├── protocol.py
+├── receiver.py
+├── sender.py
+├── simulator.py
 │
 ├── test_empty_file.py
-├── test_invalid_packet.py
 ├── test_file_metadata.py
 ├── test_file_receiver.py
 ├── test_file_sender.py
 ├── test_file_transfer_receiver.py
 ├── test_file_utils.py
 ├── test_integrity.py
+├── test_invalid_packet.py
 ├── test_metrics.py
 │
-└── README.md
+├── files/
+│   ├── empty.txt
+│   ├── large_sample.txt
+│   ├── sample.txt
+│   └── small.txt
+│
+├── received/
+├── README.md
+└── .gitignore
 ```
 
-## 7. Working Mechanism
+## 6. How It Works
 
-1. The sender reads the input file.
-2. The file is divided into smaller chunks.
-3. File metadata is sent using a FILE_START packet.
-4. Data chunks are transmitted using DATA packets.
-5. The receiver validates packets and sends cumulative ACKs.
-6. Missing acknowledgements trigger timeout-based retransmissions.
-7. FILE_END indicates completion of the transfer.
-8. The receiver reconstructs and saves the file.
-9. SHA-256 hashes are compared to verify file integrity.
+The file-transfer process follows these stages:
 
-## 8. Network Simulation
+1. **File preparation:** The sender reads the file and divides it into smaller chunks.
+2. **Packet creation:** Each chunk is converted into a DATA packet with a sequence number and checksum.
+3. **File initiation:** A FILE_START packet carries file metadata.
+4. **Data transmission:** The sender transmits packets using a sliding window.
+5. **Acknowledgement:** The receiver sends cumulative ACKs for successfully received packets.
+6. **Retransmission:** Unacknowledged packets are retransmitted after a timeout.
+7. **File reconstruction:** The receiver combines the received chunks in the correct order.
+8. **File completion:** A FILE_END packet indicates completion of the transfer.
+9. **Integrity verification:** SHA-256 hashes are compared to verify that the received file matches the original.
 
-The simulator introduces artificial packet loss and delay to reproduce unreliable network conditions.
+## 7. Running the Project
 
-The project was tested using three packet-loss probabilities:
+### Prerequisites
 
-- 5%
-- 15%
-- 30%
+- Python 3 installed.
+- Git installed.
+- VS Code or another Python-compatible editor.
 
-## 9. Testing
+### Step 1: Clone the repository
 
-The following tests were performed:
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
 
-- Empty file transfer.
-- Small file transfer.
-- Large file transfer.
-- Invalid packet rejection.
-- Packet-loss simulation.
-- Retransmission and timeout handling.
-- SHA-256 file integrity verification.
+### Step 2: Open the project directory
 
-## 10. Performance Analysis
+```bash
+cd Mini-TCP
+```
 
-Performance was evaluated using:
+### Step 3: Start the receiver
 
-- Transfer duration.
-- Number of packets transmitted.
-- Retransmissions.
-- Simulated packet drops.
-- Timeout events.
-- Network bytes sent.
-- Useful throughput.
+Open the first terminal:
 
-## 11. Limitations
+```bash
+python network_file_receiver.py
+```
 
-- The implementation is an educational protocol, not a replacement for TCP.
-- Communication is currently configured for a local network endpoint.
-- Packet-loss and delay behavior are simulated.
-- The implementation does not provide TCP-level congestion control.
+### Step 4: Start the sender
 
-## 12. Future Enhancements
+Open a second terminal:
 
-- Support transfers between different computers.
-- Add adaptive retransmission timeouts.
-- Implement congestion control.
-- Add selective acknowledgement mechanisms.
-- Develop a graphical monitoring dashboard.
+```bash
+python network_file_sender.py
+```
 
-## 13. Conclusion
+The sender transfers the configured sample file to the receiver.
 
-Mini-TCP demonstrates how reliability mechanisms can be implemented over UDP. Through sequencing, acknowledgements, retransmissions, sliding windows, packet validation, and file integrity checks, the project provides practical insight into reliable transport-layer communication.
+The received file is saved inside the `received/` directory.
+
+**Current implementation:** The network sender and receiver use localhost (`127.0.0.1`). Therefore, the current configuration is intended for testing on the same computer.
+
+## 8. Testing
+
+The project has been tested with different file sizes and packet-loss conditions.
+
+### File-transfer tests
+
+| Test case | Result |
+|---|---|
+| Empty file | Passed |
+| Small file | Passed |
+| Large file | Passed |
+| Invalid packet | Rejected successfully |
+| File integrity verification | Passed |
+
+### Packet-loss experiments
+
+The large sample file (19,000 bytes) was transferred under three simulated packet-loss conditions.
+
+| Metric | 5% Loss | 15% Loss | 30% Loss |
+|---|---:|---:|---:|
+| Transfer time (seconds) | 18.859 | 33.344 | 59.829 |
+| Packets transmitted | 49 | 57 | 75 |
+| Retransmissions | 11 | 26 | 48 |
+| Network bytes sent | 40,818 | 45,823 | 61,591 |
+| Simulated packet drops | 3 | 12 | 39 |
+| Timeout events | 3 | 8 | 20 |
+| Throughput (bytes/sec) | 1007.48 | 569.82 | 317.57 |
+| SHA-256 verification | Passed | Passed | Passed |
+
+*Note: Results are from individual simulation runs. Packet-loss outcomes and performance measurements may vary between runs.*
+
+### Observation
+
+As simulated packet loss increases:
+
+- The number of retransmissions increases.
+- Timeout events become more frequent.
+- Transfer duration increases.
+- Useful throughput decreases.
+
+The matching SHA-256 hashes confirm that the original and received files were identical in the tested transfers.
+
+## 9. Performance Metrics
+
+Mini-TCP records the following metrics:
+
+- Transfer time
+- Number of packets transmitted
+- Number of retransmissions
+- Network bytes sent
+- File bytes transferred
+- Simulated packet drops
+- Timeout events
+- Useful throughput
+
+These measurements help evaluate the effect of packet loss on reliable file transmission.
+
+## 10. Limitations
+
+- The current sender and receiver are configured for localhost communication.
+- The project does not implement the complete TCP specification.
+- Network conditions are simulated rather than measured from a real network.
+- The current implementation is an educational prototype, not a production-ready file-transfer service.
+
+## 11. Future Enhancements
+
+- Support communication between two computers over a local network.
+- Add command-line arguments for file selection.
+- Allow configurable packet-loss and delay probabilities.
+- Improve error handling and transfer recovery.
+- Add a graphical user interface.
+- Evaluate performance under real network conditions.
+
+## 12. Conclusion
+
+Mini-TCP demonstrates how reliable file transfer can be implemented over UDP using concepts such as Go-Back-N sliding window protocol, cumulative acknowledgements, retransmissions, and integrity verification.
+
+The project provides practical experience with network programming, transport-layer reliability, file handling, and performance analysis using Python.
+
+---
+
+**Project:** Mini-TCP – Reliable File Transfer over UDP  
+**Language:** Python  
+**Domain:** Computer Networks
